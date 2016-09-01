@@ -5,7 +5,8 @@
     "jQuery": true,
     "$": true,
     "chrome": true,
-    "Mousetrap": true
+    "Mousetrap": true,
+    "document": true
   },
   "extends": "airbnb",
   "rules": {
