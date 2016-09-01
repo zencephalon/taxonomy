@@ -1,12 +1,12 @@
 {
-  "name": "My Bookmarks",
-  "version": "1.1",
-  "description": "A browser action with a popup dump of all bookmarks, including search, add, edit and delete.",
+  "name": "taxonomy",
+  "version": "0.0.0",
+  "description": "An extension that helps U organize your bookmarks systematically",
   "permissions": [
     "bookmarks"
   ],
   "browser_action": {
-      "default_title": "My Bookmarks",
+      "default_title": "taxonomy",
       "default_icon": "icon.png",
       "default_popup": "popup.html"
   },
