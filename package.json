@@ -22,5 +22,11 @@
   "bugs": {
     "url": "https://github.com/zencephalon/taxonomy/issues"
   },
-  "homepage": "https://github.com/zencephalon/taxonomy#readme"
+  "homepage": "https://github.com/zencephalon/taxonomy#readme",
+  "devDependencies": {
+    "babel-cli": "^6.14.0",
+    "babel-eslint": "^6.1.2",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-preset-stage-0": "^6.5.0"
+  }
 }
