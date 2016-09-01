@@ -2,9 +2,10 @@
   "name": "taxonomy",
   "version": "0.0.0",
   "description": "A Chrome extension that interactively helps U organize your bookmarks.",
-  "main": "popup.js",
+  "main": "src/popup.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src --presets babel-preset-stage-0 --out-dir build"
   },
   "repository": {
     "type": "git",
