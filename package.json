@@ -1,0 +1,26 @@
+{
+  "name": "taxonomy",
+  "version": "0.0.0",
+  "description": "A Chrome extension that interactively helps U organize your bookmarks.",
+  "main": "popup.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zencephalon/taxonomy.git"
+  },
+  "keywords": [
+    "chrome",
+    "bookmarks",
+    "extension",
+    "organization",
+    "sorting"
+  ],
+  "author": "Matthew Bunday (http://zencephalon.com/)",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/zencephalon/taxonomy/issues"
+  },
+  "homepage": "https://github.com/zencephalon/taxonomy#readme"
+}
