@@ -3,7 +3,9 @@
   "globals": {
     // Put things like jQuery, etc
     "jQuery": true,
-    "$": true
+    "$": true,
+    "chrome": true,
+    "Mousetrap": true
   },
   "extends": "airbnb",
   "rules": {
