@@ -1,10 +1,3 @@
-// Search the bookmarks when entering the search keyword.
-$(function() {
-  $('#search').change(function() {
-     $('#bookmarks').empty();
-     dumpBookmarks($('#search').val());
-  });
-});
 // Traverse the bookmark tree, and print the folder and nodes.
 function dumpBookmarks(query) {
   var bookmarkTreeNodes = chrome.bookmarks.getTree(
