@@ -51,7 +51,7 @@ class Taxonomy {
 
   addShortcuts(folders) {
     folders.forEach(folder => {
-      const shortcut = this.shortestRemainingShortcut(folder.title)
+      const shortcut = this.shortestNonOverlappingShortcut(folder.title)
       const { id } = folder
       this.shortcuts[shortcut] = id
       this.shortcutsById[id] = shortcut
@@ -63,15 +63,28 @@ class Taxonomy {
 
   getShortcut = (folderId) => this.shortcutsById[folderId]
 
-  shortestRemainingShortcut(t) {
-    const title = t.toLowerCase()
-    for (let i = 2; i <= title.length; i++) {
-      const proposed = title.slice(0, i)
+  shortestNonOverlappingShortcut(t) {
+    console.log('working on ', t)
+    const letters = t.toLowerCase().split('')
+    if (letters.length < 2) {
+      letters.push('z')
+    }
+    let proposed = `${letters.shift()}`
+    while (true) {
+      if (this.shortcuts[proposed]) {
+        proposed = proposed.substr(0, proposed.length - 1)
+      }
+
+      if (letters.length === 0) {
+        letters.push('z')
+      }
+      const next = letters.shift()
+      proposed += next
+
       if (!this.shortcuts[proposed]) {
         return proposed
       }
     }
-    return title
   }
 
   renderHtml(html) {

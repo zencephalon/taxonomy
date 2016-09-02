@@ -92,7 +92,7 @@ var Taxonomy = function () {
       var _this4 = this;
 
       folders.forEach(function (folder) {
-        var shortcut = _this4.shortestRemainingShortcut(folder.title);
+        var shortcut = _this4.shortestNonOverlappingShortcut(folder.title);
         var id = folder.id;
 
         _this4.shortcuts[shortcut] = id;
@@ -103,16 +103,29 @@ var Taxonomy = function () {
       });
     }
   }, {
-    key: 'shortestRemainingShortcut',
-    value: function shortestRemainingShortcut(t) {
-      var title = t.toLowerCase();
-      for (var i = 2; i <= title.length; i++) {
-        var proposed = title.slice(0, i);
+    key: 'shortestNonOverlappingShortcut',
+    value: function shortestNonOverlappingShortcut(t) {
+      console.log('working on ', t);
+      var letters = t.toLowerCase().split('');
+      if (letters.length < 2) {
+        letters.push('z');
+      }
+      var proposed = '' + letters.shift();
+      while (true) {
+        if (this.shortcuts[proposed]) {
+          proposed = proposed.substr(0, proposed.length - 1);
+        }
+
+        if (letters.length === 0) {
+          letters.push('z');
+        }
+        var next = letters.shift();
+        proposed += next;
+
         if (!this.shortcuts[proposed]) {
           return proposed;
         }
       }
-      return title;
     }
   }, {
     key: 'renderHtml',
