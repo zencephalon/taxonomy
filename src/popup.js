@@ -1,6 +1,7 @@
 const SELECT = 'SELECT'
 const SORT = 'SORT'
 const EDIT = 'EDIT'
+const CREATE = 'CREATE'
 
 class Taxonomy {
   constructor() {
@@ -20,6 +21,10 @@ class Taxonomy {
 
   setSorting() {
     this.state = SORT
+  }
+
+  setCreating() {
+    this.state = CREATE
   }
 
   setSelecting() {
@@ -54,16 +59,42 @@ class Taxonomy {
       this.setBookmark(bms[0])
       const fs = this.getFolders(f.children)
       this.resetShortcuts()
-      const moveToFolder = this.moveToFolder(bms[0].id)
+      const moveToFolder = bms[0] ? this.moveToFolder(bms[0].id) : () => {}
       this.addShortcuts(fs, moveToFolder)
       this.addSelectShortcut()
+      this.addCreateShortcut()
       this.renderHtml(
         `<h2>organizing folder: ${this.folderTitle(f.title)}</h2>` +
         `<h3>current bookmark: ${this.bookmarkHtml(this.bookmark)}</h3>` +
         `<ul>${fs.map(tf => `<li>${this.getShortcut(tf.id)}: ${tf.title}</li>`).join('')}</ul>` +
-        'ctrl+s: stop sorting this folder'
+        '<p>ctrl+s: stop sorting this folder</p>' +
+        '<p>ctrl+n: create new folder</p>'
       )
     })
+  }
+
+  renderCreate() {
+    chrome.bookmarks.getSubTree(this.folderId, ([f]) => {
+      console.log('render create')
+      this.resetShortcuts()
+      this.renderHtml(
+        `<h2>creating new folder in: ${this.folderTitle(f.title)}</h2>` +
+        'folder name: <input id="newFolder" />'
+      )
+      $('#newFolder').focus()
+      $('#newFolder').keydown(e => {
+        if (e.which === 13) {
+          e.preventDefault()
+          this.createFolder(e.target.value)
+        }
+      })
+    })
+  }
+
+  createFolder(title) {
+    chrome.bookmarks.create({ parentId: this.folderId, title })
+    this.setSorting()
+    this.render()
   }
 
   selectFolder = (id) => {
@@ -93,6 +124,13 @@ class Taxonomy {
   addSortShortcut() {
     Mousetrap.bind('ctrl+s', () => {
       this.setSorting()
+      this.render()
+    })
+  }
+
+  addCreateShortcut() {
+    Mousetrap.bind('ctrl+n', () => {
+      this.setCreating()
       this.render()
     })
   }
@@ -154,6 +192,9 @@ class Taxonomy {
         break
       case SORT:
         this.renderSort()
+        break
+      case CREATE:
+        this.renderCreate()
         break
       default:
         break

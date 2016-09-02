@@ -9,6 +9,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var SELECT = 'SELECT';
 var SORT = 'SORT';
 var EDIT = 'EDIT';
+var CREATE = 'CREATE';
 
 var Taxonomy = function () {
   function Taxonomy() {
@@ -72,6 +73,11 @@ var Taxonomy = function () {
       this.state = SORT;
     }
   }, {
+    key: 'setCreating',
+    value: function setCreating() {
+      this.state = CREATE;
+    }
+  }, {
     key: 'setSelecting',
     value: function setSelecting() {
       this.state = SELECT;
@@ -117,13 +123,43 @@ var Taxonomy = function () {
         _this3.setBookmark(bms[0]);
         var fs = _this3.getFolders(f.children);
         _this3.resetShortcuts();
-        var moveToFolder = _this3.moveToFolder(bms[0].id);
+        var moveToFolder = bms[0] ? _this3.moveToFolder(bms[0].id) : function () {};
         _this3.addShortcuts(fs, moveToFolder);
         _this3.addSelectShortcut();
+        _this3.addCreateShortcut();
         _this3.renderHtml('<h2>organizing folder: ' + _this3.folderTitle(f.title) + '</h2>' + ('<h3>current bookmark: ' + _this3.bookmarkHtml(_this3.bookmark) + '</h3>') + ('<ul>' + fs.map(function (tf) {
           return '<li>' + _this3.getShortcut(tf.id) + ': ' + tf.title + '</li>';
-        }).join('') + '</ul>') + 'ctrl+s: stop sorting this folder');
+        }).join('') + '</ul>') + '<p>ctrl+s: stop sorting this folder</p>' + '<p>ctrl+n: create new folder</p>');
       });
+    }
+  }, {
+    key: 'renderCreate',
+    value: function renderCreate() {
+      var _this4 = this;
+
+      chrome.bookmarks.getSubTree(this.folderId, function (_ref5) {
+        var _ref6 = _slicedToArray(_ref5, 1);
+
+        var f = _ref6[0];
+
+        console.log('render create');
+        _this4.resetShortcuts();
+        _this4.renderHtml('<h2>creating new folder in: ' + _this4.folderTitle(f.title) + '</h2>' + 'folder name: <input id="newFolder" />');
+        $('#newFolder').focus();
+        $('#newFolder').keydown(function (e) {
+          if (e.which === 13) {
+            e.preventDefault();
+            _this4.createFolder(e.target.value);
+          }
+        });
+      });
+    }
+  }, {
+    key: 'createFolder',
+    value: function createFolder(title) {
+      chrome.bookmarks.create({ parentId: this.folderId, title: title });
+      this.setSorting();
+      this.render();
     }
   }, {
     key: 'resetShortcuts',
@@ -135,45 +171,55 @@ var Taxonomy = function () {
   }, {
     key: 'addBackShortcut',
     value: function addBackShortcut(f) {
-      var _this4 = this;
+      var _this5 = this;
 
       if (f.parentId) {
         Mousetrap.bind('backspace', function () {
-          return _this4.selectFolder(f.parentId);
+          return _this5.selectFolder(f.parentId);
         });
       }
     }
   }, {
     key: 'addSortShortcut',
     value: function addSortShortcut() {
-      var _this5 = this;
+      var _this6 = this;
 
       Mousetrap.bind('ctrl+s', function () {
-        _this5.setSorting();
-        _this5.render();
+        _this6.setSorting();
+        _this6.render();
+      });
+    }
+  }, {
+    key: 'addCreateShortcut',
+    value: function addCreateShortcut() {
+      var _this7 = this;
+
+      Mousetrap.bind('ctrl+n', function () {
+        _this7.setCreating();
+        _this7.render();
       });
     }
   }, {
     key: 'addSelectShortcut',
     value: function addSelectShortcut() {
-      var _this6 = this;
+      var _this8 = this;
 
       Mousetrap.bind('ctrl+s', function () {
-        _this6.setSelecting();
-        _this6.render();
+        _this8.setSelecting();
+        _this8.render();
       });
     }
   }, {
     key: 'addShortcuts',
     value: function addShortcuts(folders, selectFunc) {
-      var _this7 = this;
+      var _this9 = this;
 
       folders.forEach(function (folder) {
-        var shortcut = _this7.shortestNonOverlappingShortcut(folder.title);
+        var shortcut = _this9.shortestNonOverlappingShortcut(folder.title);
         var id = folder.id;
 
-        _this7.shortcuts[shortcut] = id;
-        _this7.shortcutsById[id] = shortcut;
+        _this9.shortcuts[shortcut] = id;
+        _this9.shortcutsById[id] = shortcut;
         Mousetrap.bind(shortcut.split('').join(' ') + ' space', function () {
           return selectFunc(id);
         });
@@ -217,6 +263,9 @@ var Taxonomy = function () {
           break;
         case SORT:
           this.renderSort();
+          break;
+        case CREATE:
+          this.renderCreate();
           break;
         default:
           break;
