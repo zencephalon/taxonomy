@@ -6,6 +6,7 @@ class Taxonomy {
   constructor() {
     this.state = SELECT
     this.folderId = '0'
+    this.bookmark = undefined
     this.$app = $('#app')
     this.shortcuts = {}
     this.shortcutsById = {}
@@ -15,17 +16,52 @@ class Taxonomy {
 
   backShortcutHtml = f => (f.parentId ? 'Backspace: go back up' : '')
 
+  bookmarkHtml = bm => (bm ? `<a href="${bm.url}">${bm.title}</a>` : 'No more bookmarks')
+
+  setSorting() {
+    this.state = SORT
+  }
+
+  setSelecting() {
+    this.state = SELECT
+  }
+
+  setBookmark(bm) {
+    this.bookmark = bm
+  }
+
   renderSelect() {
     chrome.bookmarks.getSubTree(this.folderId, ([f]) => {
       console.log(f)
       const fs = this.getFolders(f.children)
       this.resetShortcuts()
-      this.addShortcuts(fs)
+      this.addShortcuts(fs, this.selectFolder)
       this.addBackShortcut(f)
+      this.addSortShortcut()
       this.renderHtml(
         `<h2>current folder: ${this.folderTitle(f.title)}</h2>` +
         `<ul>${fs.map(tf => `<li>${this.getShortcut(tf.id)}: ${tf.title}</li>`).join('')}</ul>` +
-        this.backShortcutHtml(f)
+        this.backShortcutHtml(f) +
+        '<p>ctrl+s: sort this folder</p>'
+      )
+    })
+  }
+
+  renderSort() {
+    chrome.bookmarks.getSubTree(this.folderId, ([f]) => {
+      console.log('render sort')
+      const bms = this.getBookmarks(f.children)
+      this.setBookmark(bms[0])
+      const fs = this.getFolders(f.children)
+      this.resetShortcuts()
+      const moveToFolder = this.moveToFolder(bms[0].id)
+      this.addShortcuts(fs, moveToFolder)
+      this.addSelectShortcut()
+      this.renderHtml(
+        `<h2>organizing folder: ${this.folderTitle(f.title)}</h2>` +
+        `<h3>current bookmark: ${this.bookmarkHtml(this.bookmark)}</h3>` +
+        `<ul>${fs.map(tf => `<li>${this.getShortcut(tf.id)}: ${tf.title}</li>`).join('')}</ul>` +
+        'ctrl+s: stop sorting this folder'
       )
     })
   }
@@ -35,6 +71,11 @@ class Taxonomy {
       this.folderId = id
       this.renderSelect()
     }
+  }
+
+  moveToFolder = (bmId) => (fId) => {
+    chrome.bookmarks.move(bmId, { parentId: fId })
+    this.renderSort()
   }
 
   resetShortcuts() {
@@ -49,22 +90,37 @@ class Taxonomy {
     }
   }
 
-  addShortcuts(folders) {
+  addSortShortcut() {
+    Mousetrap.bind('ctrl+s', () => {
+      this.setSorting()
+      this.render()
+    })
+  }
+
+  addSelectShortcut() {
+    Mousetrap.bind('ctrl+s', () => {
+      this.setSelecting()
+      this.render()
+    })
+  }
+
+  addShortcuts(folders, selectFunc) {
     folders.forEach(folder => {
       const shortcut = this.shortestNonOverlappingShortcut(folder.title)
       const { id } = folder
       this.shortcuts[shortcut] = id
       this.shortcutsById[id] = shortcut
-      Mousetrap.bind(`${shortcut.split('').join(' ')} space`, () => this.selectFolder(id))
+      Mousetrap.bind(`${shortcut.split('').join(' ')} space`, () => selectFunc(id))
     })
   }
 
   getFolders = (nodes) => nodes.filter(n => !n.url)
 
+  getBookmarks = (nodes) => nodes.filter(n => n.url)
+
   getShortcut = (folderId) => this.shortcutsById[folderId]
 
   shortestNonOverlappingShortcut(t) {
-    console.log('working on ', t)
     const letters = t.toLowerCase().split('')
     if (letters.length < 2) {
       letters.push('z')
@@ -95,6 +151,9 @@ class Taxonomy {
     switch (this.state) {
       case SELECT:
         this.renderSelect()
+        break
+      case SORT:
+        this.renderSort()
         break
       default:
         break
