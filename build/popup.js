@@ -105,7 +105,6 @@ var Taxonomy = function () {
 
         var f = _ref2[0];
 
-        console.log(f);
         var fs = _this2.getFolders(f.children);
         _this2.resetShortcuts();
         _this2.addShortcuts(fs, _this2.selectFolder);
@@ -126,7 +125,6 @@ var Taxonomy = function () {
 
         var f = _ref4[0];
 
-        console.log('render sort');
         var bms = _this3.getBookmarks(f.children);
         var bm = bms[0];
         var fs = _this3.getFolders(f.children);
@@ -150,7 +148,6 @@ var Taxonomy = function () {
 
         var f = _ref6[0];
 
-        console.log('render create');
         _this4.resetShortcuts();
         _this4.renderHtml('<h2>creating new folder in: ' + _this4.folderTitle(f.title) + '</h2>' + 'folder name: <input id="newFolder" />');
         $('#newFolder').focus();
@@ -287,17 +284,4 @@ var Taxonomy = function () {
 document.addEventListener('DOMContentLoaded', function () {
   var taxonomy = new Taxonomy();
   taxonomy.render();
-
-  // chrome.bookmarks.getSubTree('0', bookmarkTreeNode => console.log(bookmarkTreeNode))
-  // chrome.bookmarks.getSubTree('1', bookmarkTreeNode => console.log(bookmarkTreeNode))
-  // chrome.bookmarks.search('Lifehacking', (array) => { console.log(array) })
-  // chrome.bookmarks.getTree((array) => { console.log(array) })
-  Mousetrap.bind('space a a', function () {
-    console.log('aa');
-  });
-  Mousetrap.bind('space a b', function () {
-    console.log('ab');
-  });
-  localStorage.setItem('hello', 'cool');
-  console.log(localStorage.getItem('hello'));
 });

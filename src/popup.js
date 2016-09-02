@@ -42,7 +42,6 @@ class Taxonomy {
 
   renderSelect() {
     chrome.bookmarks.getSubTree(this.folderId, ([f]) => {
-      console.log(f)
       const fs = this.getFolders(f.children)
       this.resetShortcuts()
       this.addShortcuts(fs, this.selectFolder)
@@ -59,7 +58,6 @@ class Taxonomy {
 
   renderSort() {
     chrome.bookmarks.getSubTree(this.folderId, ([f]) => {
-      console.log('render sort')
       const bms = this.getBookmarks(f.children)
       const bm = bms[0]
       const fs = this.getFolders(f.children)
@@ -80,7 +78,6 @@ class Taxonomy {
 
   renderCreate() {
     chrome.bookmarks.getSubTree(this.folderId, ([f]) => {
-      console.log('render create')
       this.resetShortcuts()
       this.renderHtml(
         `<h2>creating new folder in: ${this.folderTitle(f.title)}</h2>` +
@@ -211,13 +208,4 @@ class Taxonomy {
 document.addEventListener('DOMContentLoaded', () => {
   const taxonomy = new Taxonomy()
   taxonomy.render()
-
-  // chrome.bookmarks.getSubTree('0', bookmarkTreeNode => console.log(bookmarkTreeNode))
-  // chrome.bookmarks.getSubTree('1', bookmarkTreeNode => console.log(bookmarkTreeNode))
-  // chrome.bookmarks.search('Lifehacking', (array) => { console.log(array) })
-  // chrome.bookmarks.getTree((array) => { console.log(array) })
-  Mousetrap.bind('space a a', () => { console.log('aa') })
-  Mousetrap.bind('space a b', () => { console.log('ab') })
-  localStorage.setItem('hello', 'cool')
-  console.log(localStorage.getItem('hello'))
-});
+})
