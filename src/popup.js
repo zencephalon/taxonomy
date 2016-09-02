@@ -5,12 +5,16 @@ const CREATE = 'CREATE'
 
 class Taxonomy {
   constructor() {
-    this.state = SELECT
-    this.folderId = '0'
-    this.bookmark = undefined
+    this.state = localStorage.getItem('state') || SELECT
+    this.folderId = localStorage.getItem('folderId') || '0'
     this.$app = $('#app')
     this.shortcuts = {}
     this.shortcutsById = {}
+  }
+
+  saveState() {
+    localStorage.setItem('folderId', this.folderId)
+    localStorage.setItem('state', this.state)
   }
 
   folderTitle = title => (title === '' ? 'root' : title)
@@ -21,18 +25,17 @@ class Taxonomy {
 
   setSorting() {
     this.state = SORT
+    this.saveState()
   }
 
   setCreating() {
     this.state = CREATE
+    this.saveState()
   }
 
   setSelecting() {
     this.state = SELECT
-  }
-
-  setBookmark(bm) {
-    this.bookmark = bm
+    this.saveState()
   }
 
   isRoot = () => this.folderId === '0'
@@ -58,16 +61,16 @@ class Taxonomy {
     chrome.bookmarks.getSubTree(this.folderId, ([f]) => {
       console.log('render sort')
       const bms = this.getBookmarks(f.children)
-      this.setBookmark(bms[0])
+      const bm = bms[0]
       const fs = this.getFolders(f.children)
       this.resetShortcuts()
-      const moveToFolder = bms[0] ? this.moveToFolder(bms[0].id) : () => {}
+      const moveToFolder = bm ? this.moveToFolder(bm.id) : () => {}
       this.addShortcuts(fs, moveToFolder)
       this.addSelectShortcut()
       this.addCreateShortcut()
       this.renderHtml(
         `<h2>organizing folder: ${this.folderTitle(f.title)}</h2>` +
-        `<h3>current bookmark: ${this.bookmarkHtml(this.bookmark)}</h3>` +
+        `<h3>current bookmark: ${this.bookmarkHtml(bm)}</h3>` +
         `<ul>${fs.map(tf => `<li>${this.getShortcut(tf.id)}: ${tf.title}</li>`).join('')}</ul>` +
         '<b>ctrl+s</b>: stop sorting this folder<br/>' +
         '<b>ctrl+n</b>: create new folder<br/>'
@@ -102,6 +105,7 @@ class Taxonomy {
   selectFolder = (id) => {
     if (this.state === SELECT) {
       this.folderId = id
+      this.saveState()
       this.renderSelect()
     }
   }

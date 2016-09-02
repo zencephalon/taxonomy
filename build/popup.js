@@ -36,6 +36,7 @@ var Taxonomy = function () {
     this.selectFolder = function (id) {
       if (_this.state === SELECT) {
         _this.folderId = id;
+        _this.saveState();
         _this.renderSelect();
       }
     };
@@ -63,33 +64,36 @@ var Taxonomy = function () {
       return _this.shortcutsById[folderId];
     };
 
-    this.state = SELECT;
-    this.folderId = '0';
-    this.bookmark = undefined;
+    this.state = localStorage.getItem('state') || SELECT;
+    this.folderId = localStorage.getItem('folderId') || '0';
     this.$app = $('#app');
     this.shortcuts = {};
     this.shortcutsById = {};
   }
 
   _createClass(Taxonomy, [{
+    key: 'saveState',
+    value: function saveState() {
+      localStorage.setItem('folderId', this.folderId);
+      localStorage.setItem('state', this.state);
+    }
+  }, {
     key: 'setSorting',
     value: function setSorting() {
       this.state = SORT;
+      this.saveState();
     }
   }, {
     key: 'setCreating',
     value: function setCreating() {
       this.state = CREATE;
+      this.saveState();
     }
   }, {
     key: 'setSelecting',
     value: function setSelecting() {
       this.state = SELECT;
-    }
-  }, {
-    key: 'setBookmark',
-    value: function setBookmark(bm) {
-      this.bookmark = bm;
+      this.saveState();
     }
   }, {
     key: 'renderSelect',
@@ -124,14 +128,14 @@ var Taxonomy = function () {
 
         console.log('render sort');
         var bms = _this3.getBookmarks(f.children);
-        _this3.setBookmark(bms[0]);
+        var bm = bms[0];
         var fs = _this3.getFolders(f.children);
         _this3.resetShortcuts();
-        var moveToFolder = bms[0] ? _this3.moveToFolder(bms[0].id) : function () {};
+        var moveToFolder = bm ? _this3.moveToFolder(bm.id) : function () {};
         _this3.addShortcuts(fs, moveToFolder);
         _this3.addSelectShortcut();
         _this3.addCreateShortcut();
-        _this3.renderHtml('<h2>organizing folder: ' + _this3.folderTitle(f.title) + '</h2>' + ('<h3>current bookmark: ' + _this3.bookmarkHtml(_this3.bookmark) + '</h3>') + ('<ul>' + fs.map(function (tf) {
+        _this3.renderHtml('<h2>organizing folder: ' + _this3.folderTitle(f.title) + '</h2>' + ('<h3>current bookmark: ' + _this3.bookmarkHtml(bm) + '</h3>') + ('<ul>' + fs.map(function (tf) {
           return '<li>' + _this3.getShortcut(tf.id) + ': ' + tf.title + '</li>';
         }).join('') + '</ul>') + '<b>ctrl+s</b>: stop sorting this folder<br/>' + '<b>ctrl+n</b>: create new folder<br/>');
       });
