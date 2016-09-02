@@ -6,7 +6,8 @@
     "$": true,
     "chrome": true,
     "Mousetrap": true,
-    "document": true
+    "document": true,
+    "localStorage": true
   },
   "extends": "airbnb",
   "rules": {
