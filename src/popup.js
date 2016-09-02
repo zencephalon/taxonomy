@@ -35,6 +35,8 @@ class Taxonomy {
     this.bookmark = bm
   }
 
+  isRoot = () => this.folderId === '0'
+
   renderSelect() {
     chrome.bookmarks.getSubTree(this.folderId, ([f]) => {
       console.log(f)
@@ -45,9 +47,9 @@ class Taxonomy {
       this.addSortShortcut()
       this.renderHtml(
         `<h2>current folder: ${this.folderTitle(f.title)}</h2>` +
-        `<ul>${fs.map(tf => `<li>${this.getShortcut(tf.id)}: ${tf.title}</li>`).join('')}</ul>` +
-        this.backShortcutHtml(f) +
-        '<p>ctrl+s: sort this folder</p>'
+        `<ul>${fs.map(tf => `<li><b>${this.getShortcut(tf.id)}</b>: ${tf.title}</li>`).join('')}</ul>` +
+        (!this.isRoot() ? '<b>backspace</b>: go back<br/>' : '') +
+        (!this.isRoot() ? '<b>ctrl+s</b>: sort this folder<br/>' : '')
       )
     })
   }
@@ -67,8 +69,8 @@ class Taxonomy {
         `<h2>organizing folder: ${this.folderTitle(f.title)}</h2>` +
         `<h3>current bookmark: ${this.bookmarkHtml(this.bookmark)}</h3>` +
         `<ul>${fs.map(tf => `<li>${this.getShortcut(tf.id)}: ${tf.title}</li>`).join('')}</ul>` +
-        '<p>ctrl+s: stop sorting this folder</p>' +
-        '<p>ctrl+n: create new folder</p>'
+        '<b>ctrl+s</b>: stop sorting this folder<br/>' +
+        '<b>ctrl+n</b>: create new folder<br/>'
       )
     })
   }
@@ -212,4 +214,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // chrome.bookmarks.getTree((array) => { console.log(array) })
   Mousetrap.bind('space a a', () => { console.log('aa') })
   Mousetrap.bind('space a b', () => { console.log('ab') })
+  localStorage.setItem('hello', 'cool')
+  console.log(localStorage.getItem('hello'))
 });

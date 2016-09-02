@@ -29,6 +29,10 @@ var Taxonomy = function () {
       return bm ? '<a href="' + bm.url + '">' + bm.title + '</a>' : 'No more bookmarks';
     };
 
+    this.isRoot = function () {
+      return _this.folderId === '0';
+    };
+
     this.selectFolder = function (id) {
       if (_this.state === SELECT) {
         _this.folderId = id;
@@ -104,8 +108,8 @@ var Taxonomy = function () {
         _this2.addBackShortcut(f);
         _this2.addSortShortcut();
         _this2.renderHtml('<h2>current folder: ' + _this2.folderTitle(f.title) + '</h2>' + ('<ul>' + fs.map(function (tf) {
-          return '<li>' + _this2.getShortcut(tf.id) + ': ' + tf.title + '</li>';
-        }).join('') + '</ul>') + _this2.backShortcutHtml(f) + '<p>ctrl+s: sort this folder</p>');
+          return '<li><b>' + _this2.getShortcut(tf.id) + '</b>: ' + tf.title + '</li>';
+        }).join('') + '</ul>') + (!_this2.isRoot() ? '<b>backspace</b>: go back<br/>' : '') + (!_this2.isRoot() ? '<b>ctrl+s</b>: sort this folder<br/>' : ''));
       });
     }
   }, {
@@ -129,7 +133,7 @@ var Taxonomy = function () {
         _this3.addCreateShortcut();
         _this3.renderHtml('<h2>organizing folder: ' + _this3.folderTitle(f.title) + '</h2>' + ('<h3>current bookmark: ' + _this3.bookmarkHtml(_this3.bookmark) + '</h3>') + ('<ul>' + fs.map(function (tf) {
           return '<li>' + _this3.getShortcut(tf.id) + ': ' + tf.title + '</li>';
-        }).join('') + '</ul>') + '<p>ctrl+s: stop sorting this folder</p>' + '<p>ctrl+n: create new folder</p>');
+        }).join('') + '</ul>') + '<b>ctrl+s</b>: stop sorting this folder<br/>' + '<b>ctrl+n</b>: create new folder<br/>');
       });
     }
   }, {
@@ -290,4 +294,6 @@ document.addEventListener('DOMContentLoaded', function () {
   Mousetrap.bind('space a b', function () {
     console.log('ab');
   });
+  localStorage.setItem('hello', 'cool');
+  console.log(localStorage.getItem('hello'));
 });
