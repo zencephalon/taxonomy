@@ -133,9 +133,10 @@ var Taxonomy = function () {
         _this3.addShortcuts(fs, moveToFolder);
         _this3.addSelectShortcut();
         _this3.addCreateShortcut();
+        _this3.addOpenShortcut(bm.url);
         _this3.renderHtml('<h2>organizing folder: ' + _this3.folderTitle(f.title) + '</h2>' + ('<h3>current bookmark: ' + _this3.bookmarkHtml(bm) + '</h3>') + ('<ul>' + fs.map(function (tf) {
           return '<li>' + _this3.getShortcut(tf.id) + ': ' + tf.title + '</li>';
-        }).join('') + '</ul>') + '<b>ctrl+s</b>: stop sorting this folder<br/>' + '<b>ctrl+n</b>: create new folder<br/>');
+        }).join('') + '</ul>') + '<b>ctrl+s</b>: stop sorting this folder<br/>' + '<b>ctrl+o</b>: open this bookmark<br/>' + '<b>ctrl+n</b>: create new folder<br/>');
       });
     }
   }, {
@@ -202,6 +203,13 @@ var Taxonomy = function () {
       Mousetrap.bind('ctrl+n', function () {
         _this7.setCreating();
         _this7.render();
+      });
+    }
+  }, {
+    key: 'addOpenShortcut',
+    value: function addOpenShortcut(url) {
+      Mousetrap.bind('ctrl+o', function () {
+        chrome.tabs.create({ url: url, active: true });
       });
     }
   }, {

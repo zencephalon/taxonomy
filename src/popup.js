@@ -66,11 +66,13 @@ class Taxonomy {
       this.addShortcuts(fs, moveToFolder)
       this.addSelectShortcut()
       this.addCreateShortcut()
+      this.addOpenShortcut(bm.url)
       this.renderHtml(
         `<h2>organizing folder: ${this.folderTitle(f.title)}</h2>` +
         `<h3>current bookmark: ${this.bookmarkHtml(bm)}</h3>` +
         `<ul>${fs.map(tf => `<li>${this.getShortcut(tf.id)}: ${tf.title}</li>`).join('')}</ul>` +
         '<b>ctrl+s</b>: stop sorting this folder<br/>' +
+        '<b>ctrl+o</b>: open this bookmark<br/>' +
         '<b>ctrl+n</b>: create new folder<br/>'
       )
     })
@@ -135,6 +137,12 @@ class Taxonomy {
     Mousetrap.bind('ctrl+n', () => {
       this.setCreating()
       this.render()
+    })
+  }
+
+  addOpenShortcut(url) {
+    Mousetrap.bind('ctrl+o', () => {
+      chrome.tabs.create({ url, active: true })
     })
   }
 
