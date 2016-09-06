@@ -159,7 +159,7 @@ class Taxonomy {
       const { id } = folder
       this.shortcuts[shortcut] = id
       this.shortcutsById[id] = shortcut
-      Mousetrap.bind(`${shortcut.split('').join(' ')} space`, () => selectFunc(id))
+      Mousetrap.bind(`${shortcut.split('').join(' ')}`, () => selectFunc(id))
     })
   }
 

@@ -233,7 +233,7 @@ var Taxonomy = function () {
 
         _this9.shortcuts[shortcut] = id;
         _this9.shortcutsById[id] = shortcut;
-        Mousetrap.bind(shortcut.split('').join(' ') + ' space', function () {
+        Mousetrap.bind('' + shortcut.split('').join(' '), function () {
           return selectFunc(id);
         });
       });
