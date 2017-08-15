@@ -67,6 +67,9 @@ class Taxonomy {
       this.addSelectShortcut()
       this.addCreateShortcut()
       this.addOpenShortcut(bm.url)
+      chrome.tabs.query({ currentWindow: true, active: true }, tab => {
+            chrome.tabs.update(tab.id, { url: bm.url });
+      });
       this.renderHtml(
         `<h2>organizing folder: ${this.folderTitle(f.title)}</h2>` +
         `<h3>current bookmark: ${this.bookmarkHtml(bm)}</h3>` +
