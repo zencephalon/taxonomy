@@ -1,7 +1,7 @@
 {
   "name": "taxonomy",
-  "version": "0.0.0",
-  "description": "An extension that helps U organize your bookmarks systematically",
+  "version": "0.1.0",
+  "description": "An extension that helps organize bookmarks algorithmically",
   "permissions": [
     "bookmarks",
     "tabs"
